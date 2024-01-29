@@ -26,9 +26,9 @@
 module load python3/3.8
 
 # Activate python environment
-source /home/skgtjml/envs/spikesorting_scritps/bin/activate
+source /home/ucjuhae/venv/bin/activate
 
 # Your work should be done in $TMPDIR 
 cd $TMPDIR
 
-python /home/skgtjml/code/spikesorting_scripts/scripts/spikesorting_concatenated_WARP.py /home/skgtjml/code/spikesorting_scripts/scripts/json_files/spikesorting_params_concatenated_WARP_7.json
+python /home/ucjuhae/spikesorting_scripts/scripts/spikesorting_concatenated_WARP.py /home/ucjuhae/spikesorting_scripts/scripts/json_files/spikesorting_params_concatenated_WARP.json
