@@ -1,7 +1,7 @@
 {
-    "logpath": "/home/skgtjml/Scratch/logs",
+    "logpath": "/home/ucjuhae/Scratch/logs",
 
-    "datadir": "/home/skgtjml/Scratch/WARP_data",
+    "datadir": "/home/ucjuhae/Scratch/WARP_data",
 
     "rec_name": "2022_01_24-2022_02_17",
 
@@ -26,14 +26,14 @@
         }
     },
 
-    "working_directory": "/home/skgtjml/Scratch/working_directory/multirec",
+    "working_directory": "/home/ucjuhae/Scratch/working_directory/multirec",
 
-    "output_folder": "/home/skgtjml/Scratch/output_multirecordings/F1903_Trifle",
+    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings/F1903_Trifle",
     
     "sorter_paths":
     {
-        "kilosort2_path": "/home/skgtjml/code/spikesorting_tools/Kilosort-2.0",
-        "waveclus_path": "/home/skgtjml/code/spikesorting_tools/wave_clus"
+        "kilosort2_path": "/home/ucjuhae/code/spikesorting_tools/Kilosort-2.0",
+        "waveclus_path": "/home/ucjuhae/code/spikesorting_tools/wave_clus"
     },
 
     "job_kwargs":
