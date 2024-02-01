@@ -1,0 +1,46 @@
+{
+    "logpath": "/home/ucjuhae/Scratch/logs",
+
+    "datadir": "/home/ucjuhae/Scratch/F2201_StarAnise",
+
+    "rec_name": "20240124-20240125",
+
+    "streams": ["BB_4", "BB_5"],
+
+    "sorter_list": ["mountainsort5"],
+
+    "sorter_params":
+    {
+        "mountainsort4":
+        {
+            "adjacency_radius": 20,
+            "filter": false,
+            "whiten": false,
+            "num_workers": 10
+        },
+        "mountainsort5":
+        {
+            "scheme": "3",
+            "filter": false,
+            "whiten": false
+        }
+    },
+
+    "working_directory": "/home/ucjuhae/Scratch/working_directory/multirec",
+
+    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings/F1903_Trifle",
+    
+    "sorter_paths":
+    {
+        "kilosort2_path": "/home/ucjuhae/code/spikesorting_tools/Kilosort-2.0",
+        "waveclus_path": "/home/ucjuhae/code/spikesorting_tools/wave_clus"
+    },
+
+    "job_kwargs":
+    {
+        "n_jobs": 10,
+        "chunk_size": 30000
+    }
+
+
+}

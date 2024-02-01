@@ -31,4 +31,4 @@ source /home/ucjuhae/venv/bin/activate
 # Your work should be done in $TMPDIR 
 cd $TMPDIR
 
-python /home/ucjuhae/spikesorting_scripts/scripts/spikesorting_concatenated_WARP.py /home/ucjuhae/spikesorting_scripts/scripts/json_files/spikesorting_params_concatenated_MCS.json
+python /home/ucjuhae/spikesorting_scripts/scripts/spikesorting_concatenated_MCS.py /home/ucjuhae/spikesorting_scripts/scripts/json_files/spikesorting_params_concatenated_MCS.json
