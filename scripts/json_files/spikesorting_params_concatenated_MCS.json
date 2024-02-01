@@ -5,12 +5,12 @@
 
     "rec_name": "20240124-20240125",
 
-    "streams": ["BB_4", "BB_5"],
+    "streams": ["Filter Data1"],
 
     "sorter_list": ["mountainsort5"],
 
     "sorter_params":
-    {
+    { 
         "mountainsort4":
         {
             "adjacency_radius": 20,
@@ -23,17 +23,22 @@
             "scheme": "3",
             "filter": false,
             "whiten": false
+        },
+        "pykilosort":
+        {
+            "n_jobs": 10,
+            "chunk_size": 30000
         }
     },
 
     "working_directory": "/home/ucjuhae/Scratch/working_directory/multirec",
 
-    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings/F1903_Trifle",
+    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings/F2201_StarAnise",
     
     "sorter_paths":
     {
-        "kilosort2_path": "/home/ucjuhae/code/spikesorting_tools/Kilosort-2.0",
-        "waveclus_path": "/home/ucjuhae/code/spikesorting_tools/wave_clus"
+        "kilosort2_path": "/home/ucjuhae/spikesorting_tools/Kilosort-2.0",
+        "waveclus_path": "/home/ucjuhae/spikesorting_tools/wave_clus"
     },
 
     "job_kwargs":
