@@ -7,6 +7,7 @@ logging.basicConfig(
 logger = logging.getLogger('multirec_sorting')
 logger.setLevel(logging.DEBUG)
 
+import sys
 import numpy as np
 from pathlib import Path
 from tqdm import tqdm
@@ -26,6 +27,7 @@ from spikeinterface import concatenate_recordings
 
 from probeinterface import generate_multi_columns_probe
 
+sys.path.append("/lustre/home/ucjuhae/spikesorting_scripts/")
 from spikesorting_scripts.helpers import generate_warp_32ch_probeMCS
 from spikesorting_scripts.preprocessing import remove_disconnection_events
 
@@ -47,40 +49,38 @@ def preprocess_rec(recording):
                             n_median_threshold=3,
                             n_peaks=0,
                             )
-    recording_pre = spre.bandpass_filter(recording_pre, freq_min=300, freq_max=6000)
+    recording_pre = spre.bandpass_filter(recording_pre, freq_min=200, freq_max=4999)
     recording_pre = spre.whiten(recording_pre, dtype='float32')
 
     return recording_pre
 
 
-def export_all(working_directory, output_folder, job_kwargs):
+def export_all(sortername, sortextract, recextract, rec_name, working_directory, output_folder, job_kwargs):
 
-    sorting_output = ss.collect_sorting_outputs(working_directory)
-    for (rec_name, sorter_name), sorting in sorting_output.items():
-        outDir = output_folder / rec_name / sorter_name
-        logger.info(f'saving {outDir} as phy')
-        we = sc.extract_waveforms(sorting._recording,
-                                sorting, outDir / 'waveforms', 
-                                ms_before=2.5, ms_after=3, 
-                                max_spikes_per_unit=300, #load_if_exists=True,
-                                overwrite=True,
-                                **job_kwargs
-                                # n_jobs=10, 
-                                # chunk_size=30000
-                            )
-        logger.info(f'WaveformExtractor: {we}')
+    outDir = output_folder / rec_name / sortername
+    logger.info(f'saving {outDir} as phy')
+    we = sc.extract_waveforms(recextract,
+                            sortextract, outDir / 'waveforms', 
+                            ms_before=2.5, ms_after=3, 
+                            max_spikes_per_unit=500, #load_if_exists=True,
+                            overwrite=True,
+                            **job_kwargs
+                            # n_jobs=10, 
+                            # chunk_size=30000
+                        )
+    logger.info(f'WaveformExtractor: {we}')
 
-        sexp.export_to_phy(we, outDir / 'phy', remove_if_exists=True,
-                copy_binary=True,
-                **job_kwargs
-                )
-        logger.info(f'saved {outDir} as phy')
-        sexp.export_report(we, outDir / 'report', 
-                format='png',
-                force_computation=True,
-                **job_kwargs)
-                
-        logger.info(f'saving report')
+    sexp.export_to_phy(we, outDir / 'phy', remove_if_exists=True,
+            copy_binary=True,
+            **job_kwargs
+            )
+    logger.info(f'saved {outDir} as phy')
+    sexp.export_report(we, outDir / 'report', 
+            format='png',
+            force_computation=True,
+            **job_kwargs)
+            
+    logger.info(f'saving report')
 
 def main():
     parser = argparse.ArgumentParser()
@@ -111,7 +111,7 @@ def main():
         ss.Kilosort3Sorter.set_kilosort3_path(params['sorter_paths']['kilosort3_path'])
 
     datadir = Path(params['datadir']) / params['rec_name']
-
+    print(datadir)
     streams = params['streams']
 
     output_folder = Path(params['output_folder']) / params['rec_name']
@@ -120,7 +120,8 @@ def main():
     working_directory = Path(params['working_directory']) / params['rec_name']
     working_directory.mkdir(parents=True, exist_ok=True)
 
-    blocks = [bl.name for bl in datadir.glob('*MCSRecording*')]
+    blocks = [bl.name for bl in datadir.glob('FerretFace*')]
+    print(blocks)
     blocks.sort(key=lambda f: int(re.sub('\D', '', f)))
     pbar = tqdm(blocks)
 
@@ -133,12 +134,12 @@ def main():
             pbar.set_postfix_str(f'loading {block}')
             logger.info(f'Loading block {block}')
             try:
-                h5_file = list((datadir / block).glob('*.h5'))
+                h5_file = list((datadir / block).glob('*R.h5'))
                 assert len(h5_file) == 1
                 h5_file = h5_file[0]
-                rec = se.read_mcsh5(h5_file, stream_name=stream)
+                rec = se.read_mcsh5(h5_file, stream_id=2)
                 powers.append(compute_rec_power(rec))
-                # rec = preprocess_rec(rec)
+                rec= preprocess_rec(rec)
                 recording_list[stream].append(rec)
             except Exception as e:
                 logger.info(f'Could not load block {block}')
@@ -156,15 +157,11 @@ def main():
     logger.info(f'{[recordings[stream] for stream in recordings]}')
     logger.info('Sorting')
 
-    sortings = ss.run_sorters(sorter_list, recordings, working_folder=working_directory,
-        engine='loop', verbose=True,
-        mode_if_folder_exists='overwrite',
-        sorter_params=params['sorter_params']
-        )
+    sortings = ss.run_sorter(sorter_list[2], rec, output_folder=working_directory,remove_existing_folder=True)
 
     logger.info('Finished sorting')
 
-    export_all(working_directory=working_directory, 
+    export_all(sorter_list[2], sortings, rec, rec_name=params["rec_name"],working_directory=working_directory, 
             output_folder=output_folder,
             job_kwargs=params['job_kwargs']
             )

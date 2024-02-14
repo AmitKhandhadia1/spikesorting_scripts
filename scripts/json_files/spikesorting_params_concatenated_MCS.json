@@ -3,11 +3,11 @@
 
     "datadir": "/home/ucjuhae/Scratch/F2201_StarAnise",
 
-    "rec_name": "20240124-20240125",
+    "rec_name": "20240124",
 
     "streams": ["Filter Data1"],
 
-    "sorter_list": ["mountainsort5"],
+    "sorter_list": ["waveclus","mountainsort4","mountainsort5"],
 
     "sorter_params":
     { 
@@ -25,6 +25,11 @@
             "whiten": false
         },
         "pykilosort":
+        {
+            "n_jobs": 10,
+            "chunk_size": 30000
+        },
+        "waveclus":
         {
             "n_jobs": 10,
             "chunk_size": 30000
