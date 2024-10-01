@@ -23,7 +23,7 @@ import spikeinterface.preprocessing as spre
 import spikeinterface.sorters as ss
 import spikeinterface.exporters as sexp
 
-from spikeinterface import concatenate_recordings
+from spikeinterface import append_recordings, concatenate_recordings
 
 from probeinterface import generate_multi_columns_probe
 
@@ -41,6 +41,7 @@ def compute_rec_power(rec):
 
 def preprocess_rec(recording):
     probe = generate_warp_32ch_probeMCS()
+    print(probe)
     recording = recording.set_probe(probe)
     recording_pre = spre.common_reference(recording, reference='global', operator='median')
     recording_pre = remove_disconnection_events(recording_pre,
@@ -75,12 +76,12 @@ def export_all(sortername, sortextract, recextract, rec_name, working_directory,
             **job_kwargs
             )
     logger.info(f'saved {outDir} as phy')
-    sexp.export_report(we, outDir / 'report', 
-            format='png',
-            force_computation=True,
-            **job_kwargs)
+  #  sexp.export_report(we, outDir / 'report', 
+   #         format='png',
+      #      **job_kwargs)
+    ##        force_computation=True,
             
-    logger.info(f'saving report')
+    #logger.info(f'saving report')
 
 def main():
     parser = argparse.ArgumentParser()
@@ -129,6 +130,7 @@ def main():
 
     for stream in streams:
         powers = []
+        rec_list=[]
         logger.info(f'Loading stream {stream}')
         for block in pbar:
             pbar.set_postfix_str(f'loading {block}')
@@ -137,9 +139,11 @@ def main():
                 h5_file = list((datadir / block).glob('*R.h5'))
                 assert len(h5_file) == 1
                 h5_file = h5_file[0]
+                rec_list.append(h5_file)
                 rec = se.read_mcsh5(h5_file, stream_id=2)
+                print(rec)
                 powers.append(compute_rec_power(rec))
-                rec= preprocess_rec(rec)
+                #rec = preprocess_rec(rec)
                 recording_list[stream].append(rec)
             except Exception as e:
                 logger.info(f'Could not load block {block}')
@@ -147,21 +151,25 @@ def main():
                 
         # only keep recordings with power below 2*median and above 0
         recording_list[stream] = [recording_list[stream][i] for i, power in enumerate(powers) if power < 2*np.median(powers) and power > 0]
-
+   # print(recording_list[stream][1])
+    print(rec_list)
     logger.info('Concatenating recordings')
-    recordings = {f'{params["rec_name"]}_{stream}': concatenate_recordings(recording_list[stream]) for stream in streams}
-
+   # recordings = {f'{params["rec_name"]}_{stream}': concatenate_recordings(recording_list[stream]) for stream in streams}
+    recordings = concatenate_recordings(recording_list[stream])
+    print(recordings)
     logger.info('Preprocessing recordings')
-    recordings = {f'{params["rec_name"]}_{stream}': preprocess_rec(recordings[stream]) for stream in recordings}
-
-    logger.info(f'{[recordings[stream] for stream in recordings]}')
+    # recordings = {f'{params["rec_name"]}_{stream}': preprocess_rec(recordings[stream]) for stream in recordings}
+    recordings = preprocess_rec(recordings)
+    # logger.info(f'{[recordings[stream] for stream in recordings]}')
     logger.info('Sorting')
 
-    sortings = ss.run_sorter(sorter_list[2], rec, output_folder=working_directory,remove_existing_folder=True)
-
+    sortings = ss.run_sorter(sorter_list[2], recordings, output_folder=working_directory,remove_existing_folder=True)
+    print(sortings)
+    #sortingsplit = sc.SplitSegmentSorting(sortings,recording_list[stream])
+    #print(vars(sortingsplit))
     logger.info('Finished sorting')
 
-    export_all(sorter_list[2], sortings, rec, rec_name=params["rec_name"],working_directory=working_directory, 
+    export_all(sorter_list[2], sortings, recordings, rec_name=params["rec_name"],working_directory=working_directory, 
             output_folder=output_folder,
             job_kwargs=params['job_kwargs']
             )

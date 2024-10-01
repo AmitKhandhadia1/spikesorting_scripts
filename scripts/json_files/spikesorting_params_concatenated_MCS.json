@@ -1,9 +1,9 @@
 {
     "logpath": "/home/ucjuhae/Scratch/logs",
 
-    "datadir": "/home/ucjuhae/Scratch/F2201_StarAnise",
+    "datadir": "/home/ucjuhae/Scratch/F2203_Cosmo",
 
-    "rec_name": "20240124",
+    "rec_name": "20230808",
 
     "streams": ["Filter Data1"],
 
@@ -38,7 +38,7 @@
 
     "working_directory": "/home/ucjuhae/Scratch/working_directory/multirec",
 
-    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings/F2201_StarAnise",
+    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings/F2203_Cosmo",
     
     "sorter_paths":
     {
