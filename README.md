@@ -27,7 +27,7 @@ python spikesorting_concatenated_NP.py json_files/concatenated_recordings_params
 The jobs folder contains job files to run on the UCL cluster myriad (https://www.rc.ucl.ac.uk/docs/Clusters/Myriad/)
 
 
-# Installation of pykilosort on myriad (UCL clusters)
+# Installation of kilosort4 on myriad (UCL clusters)
 
 I highly recommand to use conda for pykilosort on myriad as cupy can be complicated to install without
 
@@ -47,8 +47,8 @@ source $UCL_CONDA_PATH/etc/profile.d/conda.sh
 Create a new conda environment
 
 ```bash
-conda create --name ibl_pykil_ss python=3.9
-conda activate ibl_pykil_ss
+conda create --name kilosort4_ss python=3.9
+conda activate kilosort4_ss
 ```
 
 And install dependencies
@@ -56,19 +56,19 @@ And install dependencies
 ```bash
 conda install cupy
 pip install phylib pypandoc
-# recommended
-git clone --branch ibl_prod https://github.com/int-brain-lab/pykilosort
-
-cd pykilosort
-pip install -r requirements.txt
-pip install -e .
 ```
+
+Then install spike sorting packages. Make sure to install spike interface first and make sure torch is uninstalled
+```bash
+pip install spikeinterface
+pip uninstall torch
+pip install kilosort
+'''
+
+This should get you every if not you may need to install cuda and pytorch. If installing cuda use version 12.1.
+May also need to install a version of faiss if you run into an error
 
 And finally install the spikesorting_scripts package following the instructions under Installation
 
-~~**/!\ As of today (23/01/2023 version ibl_1.4.1) there is a typo in pykilosort that will produce an error when exporting data to phy**~~
-
-**Pull request with proposed changed merged (https://github.com/int-brain-lab/pykilosort/commit/dae7d4b3d815b701c5c9f797848bd4340f338d4e)**
-
 ## Submit the job to myriad
-Example of job running pykilosort in `jobs/run_single_NP_pykilosort.sh`
+Example of job running pykilosort in `qsub jobs/run_single_NP_pykilosort.sh`
