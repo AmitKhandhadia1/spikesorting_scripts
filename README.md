@@ -63,7 +63,7 @@ Then install spike sorting packages. Make sure to install spike interface first 
 pip install spikeinterface
 pip uninstall torch
 pip install kilosort
-'''
+```
 
 This should get you every if not you may need to install cuda and pytorch. If installing cuda use version 12.1.
 May also need to install a version of faiss if you run into an error
