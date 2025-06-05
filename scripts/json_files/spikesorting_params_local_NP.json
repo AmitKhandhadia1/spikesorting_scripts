@@ -1,0 +1,36 @@
+{
+    "logpath": "F:/Python/SpikeSortingResults/logs",
+
+    "datadir": "F:/F2406_Chevre",
+    "rec_name": "20250527",
+
+    "sorter_list": ["kilosort4"],
+
+    "sorter_params":
+    {
+        "kilosort4":
+        {
+            "n_jobs": 10,
+            "chunk_size": 30000
+        }
+    },
+
+    "working_directory": "F:/Python/SpikeSortingResults",
+
+    "output_folder": "F:/Python/SpikeSortingResults",
+    
+    "streams": ["imec0.ap"],
+
+
+    "remove_dup_spikes": true,
+    "remove_dup_spikes_params": 
+    {
+        "censored_period_ms": 0.2
+    },
+
+    "jobs_kwargs":
+    {
+        "n_jobs": 10,
+        "chunk_size": 30000
+    }
+}

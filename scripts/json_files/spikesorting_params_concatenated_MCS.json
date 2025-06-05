@@ -3,7 +3,7 @@
 
     "datadir": "/home/ucjuhae/Scratch/F2203_Cosmo",
 
-    "rec_name": "20230808",
+    "rec_name": "20250310-20250311",
 
     "streams": ["Filter Data1"],
 
@@ -15,14 +15,15 @@
         {
             "adjacency_radius": 20,
             "filter": false,
+            "freq_max": 4999,
+            "detect_threshold": 3,
             "whiten": false,
             "num_workers": 10
         },
         "mountainsort5":
         {
-            "scheme": "3",
-            "filter": false,
-            "whiten": false
+            "scheme": "2",
+            "freq_max": 4999
         },
         "pykilosort":
         {
@@ -31,8 +32,8 @@
         },
         "waveclus":
         {
-            "n_jobs": 10,
-            "chunk_size": 30000
+            "template_sdnum": 4,
+            "chunk_memory": "25M"
         }
     },
 

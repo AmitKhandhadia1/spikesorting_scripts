@@ -21,7 +21,7 @@
 # Set the working directory to somewhere in your scratch space.  
 #  This is a necessary step as compute nodes cannot write to $HOME.
 # Replace "<your_UCL_id>" with your UCL user ID :)
-#$ -wd /home/skgtjml/Scratch/workspace
+#$ -wd /home/ucjuhae/Scratch/workspace
 
 module unload compilers mpi
 module load compilers/gnu/4.9.2
@@ -29,8 +29,9 @@ module load cuda/10.1.243/gnu-4.9.2
 module load cudnn/7.6.5.32/cuda-10.1
 
 module unload python
-module load python/miniconda3/4.10.3
 source $UCL_CONDA_PATH/etc/profile.d/conda.sh
+module load python/miniconda3/4.10.3
+
 
 nvidia-smi
 
@@ -40,4 +41,4 @@ conda activate ibl_pykil_ss
 # Your work should be done in $TMPDIR 
 cd $TMPDIR
 
-python /home/skgtjml/code/spikesorting_scripts/scripts/spikesorting_single_NP.py /home/skgtjml/code/spikesorting_scripts/scripts/json_files/single_NP.json
+python /home/ucjuhae/code/spikesorting_scripts/scripts/spikesorting_single_NP.py /home/ucjuhae/code/spikesorting_scripts/scripts/json_files/single_NP.json

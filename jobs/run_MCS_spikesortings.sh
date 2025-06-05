@@ -10,7 +10,7 @@
 #$ -l tmpfs=10G
 
 # Request 6 cores.
-#$ -pe smp 12
+#$ -pe smp 6
 
 # Set the name of the job.
 #$ -N spikesorting_warp
@@ -21,7 +21,7 @@
 #$ -wd /home/ucjuhae/Scratch/workspace
 
 # module load xorg-utils/X11R7.7
-# module load matlab/full/r2021a/9.10
+#module load matlab/full/r2021a/9.10
 # module load cuda/10.1.243/gnu-4.9.2
 module load python3/3.8
 

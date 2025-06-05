@@ -1,10 +1,3 @@
-import logging
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')
-logger = logging.getLogger('sorting')
-logger.setLevel(logging.DEBUG)
 
 
 from pathlib import Path
@@ -22,7 +15,7 @@ import spikeinterface.curation as scu
 import spikeinterface.qualitymetrics as sqm
 import spikeinterface.exporters as sexp
 
-sys.path.append("/home/ucjuhae/spikesorting_scripts/")
+sys.path.append("F:/Python/spikesorting_scripts/")
 from spikesorting_scripts.npyx_metadata_fct import get_npix_sync
 from spikesorting_scripts.helpers import get_channelmap_names, sort_np_sessions
 from spikesorting_scripts.postprocessing import postprocessing_si
@@ -32,7 +25,7 @@ print(torch.cuda.is_available())
 
 def spikeglx_preprocessing(recording):
     # Preprocessing steps
-    logger.info(f'preprocessing recording')
+ #   logger.info(f'preprocessing recording')
 
     # equivalent to what catgt does
     recording = spre.phase_shift(recording)
@@ -58,27 +51,26 @@ def spikesorting_postprocessing(sorting,params):
     jobs_kwargs = params['jobs_kwargs']
     #sorting_output = ss.collect_sorting_outputs(Path(params['working_directory']))
    # for (rec_name, sorter_name), sorting in sorting_output.items():
-    rec_name=params['rec_name']
-    logger.info(f'Postprocessing {rec_name}')
+       # logger.info(f'Postprocessing {rec_name} {sorter_name}')
     sorter_name=params['sorter_list']
     rec=sorting._recording
     if params['remove_dup_spikes']:
-        logger.info(f'removing duplicate spikes')
+   #         logger.info(f'removing duplicate spikes')
         sorting = scu.remove_duplicated_spikes(sorting, censored_period_ms=params['remove_dup_spikes_params']['censored_period_ms'])
         
     sorting = scu.remove_excess_spikes(sorting, sorting._recording)
 
-    logger.info('waveform extraction')
-    outDir = Path(params['output_folder']) / params['ferret_id'] / sorter_name[0]/params['rec_name']
+    #    logger.info('waveform extraction')
+    outDir = Path(params['output_folder']) / sorter_name[0]/params['rec_name']
     if (outDir / 'waveforms_folder').exists():
         we = sc.load_waveforms(outDir / 'waveforms_folder', sorting=sorting)
     else:
         we = sc.create_sorting_analyzer(recording=rec, sorting=sorting, folder=outDir / 'sortings_folder',
                                         format="binary_folder",
-                                        sparse=True
-                                        )
+                                        sparse=True,
+                                        overwrite=True)
         we.compute('random_spikes',max_spikes_per_unit=300)
-        we.compute('waveforms',ms_before=2,ms_after=3)
+        we.compute('waveforms',ms_before=2,ms_after=3.)
         we.compute(['templates','spike_amplitudes','template_similarity','noise_levels'])
      #   we = sc.extract_waveforms(sorting._recording, sorting, outDir / 'waveforms_folder',
       #              # load_if_exists=True,
@@ -97,7 +89,7 @@ def spikesorting_postprocessing(sorting,params):
         # logger.info(f'Computing quality netrics')
         
             
-        logger.info(f'Exporting to phy')
+            #logger.info(f'Exporting to phy')
         sexp.export_to_phy(we, outDir / 'phy_folder', 
                             verbose=True, 
                             compute_pc_features=False,  copy_binary=False,
@@ -147,14 +139,14 @@ def main():
     logpath = Path(params['logpath'])
     now = datetime.datetime.now().strftime('%d-%m-%Y_%H:%M:%S')
 
-    fh = logging.FileHandler(logpath / f'neuropixels_sorting_logs_{now}.log')
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
+   # fh = logging.FileHandler(logpath / f'neuropixels_sorting_logs_{now}.log')
+   # fh.setLevel(logging.DEBUG)
+    #logger.addHandler(fh)
 
-    logger.info('Starting')
+ #   logger.info('Starting')
 #
     sorter_list = params['sorter_list'] #['klusta'] #'kilosort2']
-    logger.info(f'sorter list: {sorter_list}')
+  #  logger.info(f'sorter list: {sorter_list}')
 
     if 'kilosort2' in sorter_list:
         ss.Kilosort2Sorter.set_kilosort2_path(params['sorter_paths']['kilosort2_path'])
@@ -163,14 +155,14 @@ def main():
     if 'kilosort3' in sorter_list:
         ss.Kilosort3Sorter.set_kilosort3_path(params['sorter_paths']['kilosort3_path'])
 
-    datadir = Path(params['datadir']) / params['rec_name']
-    output_folder = Path(params['output_folder'])/params['ferret_id']/params['rec_name']
+    datadir = Path(params['datadir']) #/ params['rec_name']
+    output_folder = Path(params['output_folder'])/params['rec_name']
     working_directory = Path(params['working_directory'])/params['rec_name']
 
-    logger.info('Start loading recordings')
+   # logger.info('Start loading recordings')
 
     # Load recordings
-    sessions = [sess for sess in datadir.glob('*g0')]
+    sessions = [sess for sess in datadir.glob('F2406_chevre_230525_am_g0')]
     sessions = sort_np_sessions(sessions)
 
     recordings_dict = {}
@@ -191,15 +183,14 @@ def main():
             recordings_dict[chan_map_name].append(recording)
         else:
             recordings_dict[chan_map_name] = [recording]
-        print(recordings_dict[chan_map_name])
-        #recordings_list=sc.append_recording(recording)
 
-    logger.info('Concatenating recordings')
+        # recordings_list.append(recording)
+
+    #logger.info('Concatenating recordings')
     multirecordings = {channel_map: sc.concatenate_recordings(recordings_dict[channel_map]) for channel_map in recordings_dict}
     multirecordings = {channel_map: multirecordings[channel_map].set_probe(recordings_dict[channel_map][0].get_probe()) for channel_map in multirecordings}
 
-    logger.info(f'{[multirecordings[ch_map] for ch_map in multirecordings]}')
-
+    #logger.info(f'{[multirecordings[ch_map] for ch_map in multirecordings]}')
    # multirecordings = sc.concatenate_recordings(recordings_list)
     #multirecordings = multirecordings.set_probe(recordings_list[0].get_probe())
    # sorting = ss.run_sorters(params['sorter_list'], multirecordings, working_folder=working_directory,
@@ -210,13 +201,8 @@ def main():
     channelschosen=['imec1.ap#AP0','imec1.ap#AP96','imec1.ap#AP192','imec1.ap#AP288']
     #test=recording.select_channels(channelschosen)
     for rec in multirecordings:
-        print(multirecordings[rec])
-        test=multirecordings[rec].select_channels(channelschosen)
-        try:
-            sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=multirecordings[rec], output_folder=working_directory,remove_existing_folder=True)#**params['sorter_params'][sorter_list[0]])
-        except Exception as e:
-            logger.exception(e)
-        logger.info('Sorting complete')
+        sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=recording, output_folder=working_directory,remove_existing_folder=True) #,**params['sorter_params'][sorter_list[0]])
+        print(sortings)
     # # If recordings don't have same mapping, can do something like this:
     # # In this example, only 2 mappings are in the data, but it can be extended to more mappings
     # # To extract channel coordinates from a recording object, use recording.get_channel_locations()

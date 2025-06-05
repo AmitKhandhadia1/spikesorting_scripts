@@ -76,9 +76,9 @@ def export_all(sortername, sortextract, recextract, rec_name, working_directory,
             **job_kwargs
             )
     logger.info(f'saved {outDir} as phy')
-  #  sexp.export_report(we, outDir / 'report', 
-   #         format='png',
-      #      **job_kwargs)
+    sexp.export_report(we, outDir / 'report', 
+            format='png',
+            **job_kwargs)
     ##        force_computation=True,
             
     #logger.info(f'saving report')
@@ -136,7 +136,7 @@ def main():
             pbar.set_postfix_str(f'loading {block}')
             logger.info(f'Loading block {block}')
             try:
-                h5_file = list((datadir / block).glob('*R.h5'))
+                h5_file = list((datadir / block).glob('*.h5'))
                 assert len(h5_file) == 1
                 h5_file = h5_file[0]
                 rec_list.append(h5_file)
@@ -155,7 +155,7 @@ def main():
     print(rec_list)
     logger.info('Concatenating recordings')
    # recordings = {f'{params["rec_name"]}_{stream}': concatenate_recordings(recording_list[stream]) for stream in streams}
-    recordings = concatenate_recordings(recording_list[stream])
+    recordings = concatenate_recordings(recording_list[stream],sampling_frequency_max_diff=1)
     print(recordings)
     logger.info('Preprocessing recordings')
     # recordings = {f'{params["rec_name"]}_{stream}': preprocess_rec(recordings[stream]) for stream in recordings}
@@ -163,13 +163,13 @@ def main():
     # logger.info(f'{[recordings[stream] for stream in recordings]}')
     logger.info('Sorting')
 
-    sortings = ss.run_sorter(sorter_list[2], recordings, output_folder=working_directory,remove_existing_folder=True)
+    sortings = ss.run_sorter(sorter_name=sorter_list[1], recording=recordings, output_folder=working_directory,remove_existing_folder=True,**params['sorter_params'][sorter_list[1]])
     print(sortings)
     #sortingsplit = sc.SplitSegmentSorting(sortings,recording_list[stream])
     #print(vars(sortingsplit))
     logger.info('Finished sorting')
 
-    export_all(sorter_list[2], sortings, recordings, rec_name=params["rec_name"],working_directory=working_directory, 
+    export_all(sorter_list[1], sortings, recordings, rec_name=params["rec_name"],working_directory=working_directory, 
             output_folder=output_folder,
             job_kwargs=params['job_kwargs']
             )

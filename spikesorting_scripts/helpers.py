@@ -134,7 +134,7 @@ def get_channelmap_names(dp):
             print(f'More that 1 metafile found in {imec_folder.name}. Using {metafile[0]}')
 
         meta = load_meta_file(imec_folder / metafile[0])
-        channel_map_name = Path(meta['imRoFile'])
+        channel_map_name = Path(meta['imroFile'])
         channel_map_dict[imec_folder.name] = channel_map_name.name
 
     return channel_map_dict

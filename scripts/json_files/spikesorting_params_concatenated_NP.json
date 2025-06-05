@@ -1,0 +1,42 @@
+{
+    "logpath": "/home/ucjuhae/Scratch/logs",
+
+    "datadir": "/home/ucjuhae/Scratch/F2406_Chevre",
+    "rec_name": "20250404",
+
+    "sorter_list": ["kilosort4"],
+
+    "sorter_params":
+    {
+        "kilosort4":
+        {
+            "n_jobs": 10,
+            "chunk_size": 30000
+        }
+    },
+
+    "working_directory": "/home/ucjuhae/Scratch/working_directory/np_working_dir",
+
+    "output_folder": "/home/ucjuhae/Scratch/si_neuropixel_spikesorting",
+    
+    "streams": ["imec0.ap","imec1.ap"],
+
+    "sorter_paths":
+    {
+        "kilosort2_path": "/home/skgtjml/code/spikesorting_tools/Kilosort-2.0",
+        "kilosort3_path": "/home/skgtjml/code/spikesorting_tools/Kilosort",
+        "waveclus_path": "/home/skgtjml/code/spikesorting_tools/wave_clus"
+    },
+
+    "remove_dup_spikes": true,
+    "remove_dup_spikes_params": 
+    {
+        "censored_period_ms": 0.2
+    },
+
+    "jobs_kwargs":
+    {
+        "n_jobs": 10,
+        "chunk_size": 30000
+    }
+}
