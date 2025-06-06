@@ -1,8 +1,9 @@
 {
-    "logpath": "F:/Python/SpikeSortingResults/logs",
+    "logpath": "/home/ucjuhae/Scratch/logs",
 
-    "datadir": "F:/F2406_Chevre",
-    "rec_name": "20250527",
+    "datadir": "/home/ucjuhae/Scratch/F2406_Chevre",
+    "ferret_id": "F2406_Chevre",
+    "rec_name": "20250505",
 
     "sorter_list": ["kilosort4"],
 
@@ -15,12 +16,12 @@
         }
     },
 
-    "working_directory": "F:/Python/SpikeSortingResults",
+    "working_directory": "/home/ucjuhae/Scratch/working_directory/np_working_dir",
 
-    "output_folder": "F:/Python/SpikeSortingResults",
+    "output_folder": "/home/ucjuhae/Scratch/output_multirecordings",
     
     "streams": ["imec0.ap"],
-
+    "compressed": true,
 
     "remove_dup_spikes": true,
     "remove_dup_spikes_params": 
