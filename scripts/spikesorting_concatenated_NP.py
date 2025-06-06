@@ -75,8 +75,8 @@ def spikesorting_postprocessing(sorting,params):
     else:
         we = sc.create_sorting_analyzer(recording=rec, sorting=sorting, folder=outDir / 'sortings_folder',
                                         format="binary_folder",
-                                        sparse=True
-                                        )
+                                        sparse=True,
+                                        overwrite=True)
         we.compute('random_spikes',max_spikes_per_unit=300)
         we.compute('waveforms',ms_before=2,ms_after=3)
         we.compute(['templates','spike_amplitudes','template_similarity','noise_levels'])
@@ -179,14 +179,19 @@ def main():
     for session in sessions:
         # Extract sync onsets and save as catgt would
         # get_npix_sync(datadir / session, sync_trial_chan=[5])
-
-        recording = se.read_spikeglx(datadir / session, stream_id='imec1.ap')
+        base_folder=datadir/session
+        imecfolder=[imec for imec in base_folder.glob('*imec0')]
+        imecname=imecfolder[0].name
+        if params['compressed']:
+         
+          recording = se.read_cbin_ibl(imecfolder[0])
+        else:
+          recording = se.read_spikeglx(datadir / session, stream_id='imec0.ap')
+          
         recording = spikeglx_preprocessing(recording)
         chan_dict = get_channelmap_names(datadir/session)
-        print(chan_dict)
-        rec_names = [rec for rec in chan_dict]
-        chan_map_name = chan_dict[rec_names[0]][:-5]
-
+        chan_map_name = chan_dict[imecname][:-5]
+        print(chan_map_name)
         if chan_map_name in recordings_dict:
             recordings_dict[chan_map_name].append(recording)
         else:
@@ -210,8 +215,9 @@ def main():
     channelschosen=['imec1.ap#AP0','imec1.ap#AP96','imec1.ap#AP192','imec1.ap#AP288']
     #test=recording.select_channels(channelschosen)
     for rec in multirecordings:
+        print(rec)
         print(multirecordings[rec])
-        test=multirecordings[rec].select_channels(channelschosen)
+        #test=multirecordings[rec].select_channels(channelschosen)
         try:
             sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=multirecordings[rec], output_folder=working_directory,remove_existing_folder=True)#**params['sorter_params'][sorter_list[0]])
         except Exception as e:
