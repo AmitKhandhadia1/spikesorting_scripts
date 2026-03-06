@@ -97,24 +97,6 @@ def spikesorting_postprocessing(sorting,params):
                             **jobs_kwargs)
         
          
-            # postprocessing_si(outDir / 'phy_folder')
-
-            # sorting = se.read_kilosort(outDir / 'phy_folder')
-
-            # we = sc.extract_waveforms(sorting._recording, sorting, outDir / 'waveforms_folder',
-            #         load_if_exists=True,
-            #         overwrite=False,
-            #         ms_before=2, 
-            #         ms_after=3., 
-            #         max_spikes_per_unit=300,
-            #         sparse=True,
-            #         num_spikes_for_sparsity=100,
-            #         method="radius",
-            #         radius_um=40,
-            #         **jobs_kwargs)
-            
-            # logger.info(f'Computing quality metrics')
-            # metrics = sqm.compute_quality_metrics(we, n_jobs = jobs_kwargs['n_jobs'], verbose=True)
 
         try:
              #   logger.info('Export report')
@@ -162,9 +144,9 @@ def main():
    # logger.info('Start loading recordings')
 
     # Load recordings
-    sessions = [sess for sess in datadir.glob('F2406_chevre_230525_am_g0')]
+    sessions = [sess for sess in datadir.glob(params['session_name'])]
     sessions = sort_np_sessions(sessions)
-
+    stream=params['streams']
     recordings_dict = {}
     # /!\ This assumes that all the recordings must have same mapping
     # And assumes one probe per recording
@@ -172,7 +154,7 @@ def main():
         # Extract sync onsets and save as catgt would
         # get_npix_sync(datadir / session, sync_trial_chan=[5])
 
-        recording = se.read_spikeglx(datadir / session, stream_id='imec1.ap')
+        recording = se.read_spikeglx(datadir / session, stream_id=stream)
         recording = spikeglx_preprocessing(recording)
         chan_dict = get_channelmap_names(datadir/session)
         print(chan_dict)
@@ -201,7 +183,7 @@ def main():
     channelschosen=['imec1.ap#AP0','imec1.ap#AP96','imec1.ap#AP192','imec1.ap#AP288']
     #test=recording.select_channels(channelschosen)
     for rec in multirecordings:
-        sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=recording, output_folder=working_directory,remove_existing_folder=True) #,**params['sorter_params'][sorter_list[0]])
+        sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=recording, output_folder=working_directory,remove_existing_folder=True,**params['sorter_params'][sorter_list[0]])
         print(sortings)
     # # If recordings don't have same mapping, can do something like this:
     # # In this example, only 2 mappings are in the data, but it can be extended to more mappings
