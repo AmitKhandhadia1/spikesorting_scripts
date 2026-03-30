@@ -15,15 +15,15 @@ import spikeinterface.curation as scu
 import spikeinterface.qualitymetrics as sqm
 import spikeinterface.exporters as sexp
 
-sys.path.append("F:/Python/spikesorting_scripts/")
+sys.path.append("C:/Users/Oli/Documents/spikesorting/spikesorting_scripts-main/spikesorting_scripts-main")
 from spikesorting_scripts.npyx_metadata_fct import get_npix_sync
 from spikesorting_scripts.helpers import get_channelmap_names, sort_np_sessions
 from spikesorting_scripts.postprocessing import postprocessing_si
 import torch
+#print(torch)
+#print(torch.cuda.is_available())
 
-print(torch.cuda.is_available())
-
-def spikeglx_preprocessing(recording):
+def spikeglx_preprocessing(recording,job_kwargs):
     # Preprocessing steps
  #   logger.info(f'preprocessing recording')
 
@@ -31,6 +31,7 @@ def spikeglx_preprocessing(recording):
     recording = spre.phase_shift(recording)
     # bandpass filter and common reference can be skipped if using kilosort as it does it internally 
     # but doesn't change anything to keep it
+    recording = spre.correct_motion(recording,**job_kwargs)
     recording = spre.bandpass_filter(recording, freq_min=300, freq_max=6000)
     recording = spre.common_reference(recording, reference='global', operator='median')
     return recording
@@ -68,10 +69,12 @@ def spikesorting_postprocessing(sorting,params):
         we = sc.create_sorting_analyzer(recording=rec, sorting=sorting, folder=outDir / 'sortings_folder',
                                         format="binary_folder",
                                         sparse=True,
-                                        overwrite=True)
-        we.compute('random_spikes',max_spikes_per_unit=300)
-        we.compute('waveforms',ms_before=2,ms_after=3.)
-        we.compute(['templates','spike_amplitudes','template_similarity','noise_levels'])
+                                        overwrite=True,
+                                        **jobs_kwargs)
+        we.compute('random_spikes',max_spikes_per_unit=300,**jobs_kwargs)
+        we.compute('waveforms',ms_before=2,ms_after=3,**jobs_kwargs)
+        we.compute(['templates','spike_amplitudes'],**jobs_kwargs)
+        we.compute(['template_similarity','noise_levels'])
      #   we = sc.extract_waveforms(sorting._recording, sorting, outDir / 'waveforms_folder',
       #              # load_if_exists=True,
        #             overwrite=None,
@@ -155,7 +158,7 @@ def main():
         # get_npix_sync(datadir / session, sync_trial_chan=[5])
 
         recording = se.read_spikeglx(datadir / session, stream_id=stream)
-        recording = spikeglx_preprocessing(recording)
+        recording = spikeglx_preprocessing(recording,params['jobs_kwargs'])
         chan_dict = get_channelmap_names(datadir/session)
         print(chan_dict)
         rec_names = [rec for rec in chan_dict]
@@ -180,10 +183,10 @@ def main():
       # engine='loop', verbose=True,
       #  sorter_params=params['sorter_params'],
        # )
-    channelschosen=['imec1.ap#AP0','imec1.ap#AP96','imec1.ap#AP192','imec1.ap#AP288']
+    channelschosen=['imec0.ap#AP0','imec0.ap#AP96','imec0.ap#AP192','imec0.ap#AP288']
     #test=recording.select_channels(channelschosen)
     for rec in multirecordings:
-        sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=recording, output_folder=working_directory,remove_existing_folder=True,**params['sorter_params'][sorter_list[0]])
+        sortings = ss.run_sorter(sorter_name=sorter_list[0], recording=recording, folder=working_directory,remove_existing_folder=True,**params['sorter_params'][sorter_list[0]])
         print(sortings)
     # # If recordings don't have same mapping, can do something like this:
     # # In this example, only 2 mappings are in the data, but it can be extended to more mappings
